@@ -1,1 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
+/* You can add global styles to this file, and also import other style files */
+/* For Clarity Design System */
+@import '@cds/core/global.min.css';
+@import '@clr/ui/clr-ui.min.css';
+body {
+ background-color: #f4f4f8;
+ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
