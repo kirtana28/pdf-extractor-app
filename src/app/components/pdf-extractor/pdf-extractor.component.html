@@ -1,119 +1,110 @@
 <div class="pdf-converter-container">
-<!-- Header Section -->
-<div class="converter-header">
-<h1 class="converter-title">
-<clr-icon shape="document" size="24"></clr-icon>
-     PDF to Excel Converter
-</h1>
-<p class="converter-subtitle">Transform your PDF documents into structured Excel spreadsheets</p>
-</div>
-<!-- Import Document Section -->
-<clr-card class="import-card">
-<clr-card-header>
-<clr-icon shape="cloud-upload" size="16"></clr-icon>
-     Import Document
-</clr-card-header>
-<clr-card-block>
-<div class="import-section">
-<div class="file-upload-area" (click)="onImportClick()">
-<clr-icon shape="folder-open" size="48" class="upload-icon"></clr-icon>
-<p class="upload-text">Drag and drop your PDF file here or click to browse</p>
-<input
-           #fileInput
-           type="file"
-           accept=".pdf"
-           (change)="onFileSelected($event)"
-           style="display: none;">
-</div>
-<!-- Selected File Info -->
-<div *ngIf="selectedFile" class="selected-file-info">
-<clr-icon shape="file" class="file-icon"></clr-icon>
-<span class="file-name">{{ selectedFile.name }}</span>
-<span class="file-size">({{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB)</span>
-</div>
-<!-- Parse PDF Button -->
-<div class="parse-section">
-<button
-           class="btn btn-primary parse-btn"
-           (click)="onParsePdf()"
-           [disabled]="!selectedFile || isParsing">
-<clr-icon shape="analytics" *ngIf="!isParsing"></clr-icon>
-<clr-spinner clrInline clrSmall *ngIf="isParsing"></clr-spinner>
-           {{ isParsing ? 'Parsing PDF...' : 'Parse PDF' }}
-</button>
-</div>
-</div>
-</clr-card-block>
-</clr-card>
-<!-- Extracted Data Section -->
-<clr-card class="data-card" *ngIf="extractedData.length > 0">
-<clr-card-header>
-<clr-icon shape="grid-view" size="16"></clr-icon>
-     Extracted Data
-</clr-card-header>
-<clr-card-block>
-<div class="extracted-data-section">
-<div class="data-summary">
-<span class="badge badge-success">{{ extractedData.length }} documents found</span>
-</div>
-<!-- Data Table -->
-<clr-datagrid class="extracted-data-table">
-<clr-dg-column [clrDgField]="'sNo'">S.No</clr-dg-column>
-<clr-dg-column [clrDgField]="'documentNo'">Document No</clr-dg-column>
-<clr-dg-column [clrDgField]="'revision'">Revision</clr-dg-column>
-<clr-dg-column [clrDgField]="'nameOfDocument'" [style.width.px]="400">Name of Document</clr-dg-column>
-<clr-dg-row *clrDgItems="let item of extractedData; trackBy: trackByFn">
-<clr-dg-cell>{{ item.sNo }}</clr-dg-cell>
-<clr-dg-cell>{{ item.documentNo }}</clr-dg-cell>
-<clr-dg-cell>{{ item.revision }}</clr-dg-cell>
-<clr-dg-cell>{{ item.nameOfDocument }}</clr-dg-cell>
-</clr-dg-row>
-<clr-dg-footer>{{ extractedData.length }} documents</clr-dg-footer>
-<clr-dg-footer>
-    <clr-dg-pagination #pagination [clrDgPageSize]="100">
-      <clr-dg-page-size [clrPageSizeOptions]="[100, 200, 300, 400]">Users per page</clr-dg-page-size>
-      {{ pagination.firstItem + 1 }} - {{ pagination.lastItem + 1 }} of
-      {{ pagination.totalItems }} users
-    </clr-dg-pagination>
-  </clr-dg-footer>
-</clr-datagrid>
-<!-- Export Button -->
-<div class="export-section">
-<button
-           class="btn btn-success export-btn"
-           (click)="onExportToExcel()"
-           [disabled]="isLoading">
-<clr-icon shape="download" *ngIf="!isLoading"></clr-icon>
-<clr-spinner clrInline clrSmall *ngIf="isLoading"></clr-spinner>
-           {{ isLoading ? 'Exporting...' : 'Export to Excel' }}
-</button>
-<button
-           class="btn btn-outline reset-btn"
-           (click)="onReset()">
-<clr-icon shape="refresh"></clr-icon>
-           Reset
-</button>
-</div>
-</div>
-</clr-card-block>
-</clr-card>
-<!-- Messages -->
-<clr-alert
-   *ngIf="errorMessage"
-   [clrAlertType]="'danger'"
-   [clrAlertClosable]="true"
-   (clrAlertClosedChange)="errorMessage = ''">
-<clr-alert-item>
-<span class="alert-text">{{ errorMessage }}</span>
-</clr-alert-item>
-</clr-alert>
-<clr-alert
-   *ngIf="successMessage"
-   [clrAlertType]="'success'"
-   [clrAlertClosable]="true"
-   (clrAlertClosedChange)="successMessage = ''">
-<clr-alert-item>
-<span class="alert-text">{{ successMessage }}</span>
-</clr-alert-item>
-</clr-alert>
+   <!-- Header Section -->
+   <div class="converter-header">
+      <h1 class="converter-title">
+         <clr-icon shape="document" size="24"></clr-icon>
+         PDF to Excel Converter
+      </h1>
+      <p class="converter-subtitle">Transform your PDF documents into structured Excel spreadsheets</p>
+   </div>
+   <!-- Import Document Section -->
+   <clr-card class="import-card">
+      <clr-card-header>
+         <clr-icon shape="cloud-upload" size="16"></clr-icon>
+         Import Document
+      </clr-card-header>
+      <clr-card-block>
+         <div class="import-section">
+            <div class="file-upload-area" (click)="onImportClick()">
+               <clr-icon shape="folder-open" size="48" class="upload-icon"></clr-icon>
+               <p class="upload-text">Drag and drop your PDF file here or click to browse</p>
+               <input #fileInput type="file" accept=".pdf" (change)="onFileSelected($event)" class="file-input">
+            </div>
+            <!-- Selected File Info -->
+            <div *ngIf="selectedFile" class="selected-file-info">
+               <clr-icon shape="file" class="file-icon"></clr-icon>
+               <span class="file-name">{{ selectedFile.name }}</span>
+               <span class="file-size">({{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB)</span>
+            </div>
+            <!-- Parse PDF Button -->
+            <div class="parse-section">
+               <button class="btn btn-primary parse-btn" (click)="onParsePdf()" [disabled]="!selectedFile || isParsing">
+                  <!-- <clr-icon shape="analytics" *ngIf="!isParsing"></clr-icon> -->
+                  <clr-spinner clrInline clrSmall *ngIf="isParsing"></clr-spinner>
+                  {{ isParsing ? 'Parsing PDF...' : 'Parse PDF' }}
+               </button>
+            </div>
+         </div>
+      </clr-card-block>
+   </clr-card>
+   <!-- Messages -->
+   <clr-alert *ngIf="errorMessage" [clrAlertType]="'danger'" [clrAlertClosable]="true"
+      (clrAlertClosedChange)="errorMessage = ''">
+      <clr-alert-item>
+         <span class="alert-text">{{ errorMessage }}</span>
+      </clr-alert-item>
+   </clr-alert>
+   <clr-alert *ngIf="danger1" [clrAlertType]="'danger'" [clrAlertClosable]="true"
+      (clrAlertClosedChange)="errorMessage = ''">
+      <clr-alert-item>
+         <span class="alert-text">{{ errormessage1 }}</span>
+      </clr-alert-item>
+   </clr-alert>
+   <clr-alert *ngIf="successMessage" [clrAlertType]="'success'" [clrAlertClosable]="true"
+      (clrAlertClosedChange)="successMessage = ''">
+      <clr-alert-item>
+         <span class="alert-text">{{ successMessage }}</span>
+      </clr-alert-item>
+   </clr-alert>
+   <br />
+   <!-- Extracted Data Section -->
+   <clr-card class="data-card" *ngIf="extractedData.length > 0">
+      <clr-card-header>
+         <clr-icon shape="grid-view" size="16"></clr-icon>
+         Extracted Data
+      </clr-card-header>
+      <clr-card-block>
+         <div class="extracted-data-section">
+            <div class="data-summary">
+               <span class="badge badge-success">{{ extractedData.length }} documents found</span>
+            </div>
+
+            <!-- Data Table -->
+            <clr-datagrid class="extracted-data-table">
+               <clr-dg-column class="auto-fit" [clrDgField]="'SNo'">S.No</clr-dg-column>
+               <clr-dg-column class="auto-fit" [clrDgField]="'DocumentNo'">Document No</clr-dg-column>
+               <clr-dg-column class="auto-fit" [clrDgField]="'Revision'">Revision</clr-dg-column>
+               <clr-dg-column class="auto-fit" [clrDgField]="'NameOfDocument'">Name of Document</clr-dg-column>
+               <clr-dg-row *clrDgItems="let item of extractedData; trackBy: trackByFn">
+                  <clr-dg-cell class="auto-fit">{{ item.SNo }}</clr-dg-cell>
+                  <clr-dg-cell class="auto-fit">{{ item.DocumentNo }}</clr-dg-cell>
+                  <clr-dg-cell class="auto-fit">{{ item.Revision }}</clr-dg-cell>
+                  <clr-dg-cell class="auto-fit">{{ item.NameOfDocument }}</clr-dg-cell>
+               </clr-dg-row>
+               <clr-dg-footer>{{ extractedData.length }} documents</clr-dg-footer>
+               <clr-dg-footer>
+                  <clr-dg-pagination #pagination [clrDgPageSize]="10">
+                     <clr-dg-page-size [clrPageSizeOptions]="[10, 30, 50, 70, 100]">Documents per
+                        page</clr-dg-page-size>
+                     {{ pagination.firstItem + 1 }} - {{ pagination.lastItem + 1 }} of
+                     {{ pagination.totalItems }} Documents
+                  </clr-dg-pagination>
+               </clr-dg-footer>
+            </clr-datagrid>
+            <!-- Export Button -->
+            <div class="export-section">
+               <button class="btn btn-success export-btn" (click)="onExportToExcel()" [disabled]="isLoading">
+                  <!-- <clr-icon shape="download" *ngIf="!isLoading"></clr-icon> -->
+                  <clr-spinner clrInline clrSmall *ngIf="isLoading"></clr-spinner>
+                  {{ isLoading ? 'Exporting...' : 'Export to Excel' }}
+               </button>
+               <button class="btn btn-outline reset-btn" (click)="onReset()">
+                  <!-- <clr-icon shape="refresh"></clr-icon> -->
+                  Reset
+               </button>
+            </div>
+         </div>
+      </clr-card-block>
+   </clr-card>
+
 </div>
